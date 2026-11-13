@@ -1,0 +1,28 @@
+import { useEffect, useState } from "react";
+import { imagenesApi } from "../api/servicios";
+
+// Muestra una imagen del back. Se descarga con axios (y no con <img src>)
+// para mandar el header de ngrok; si no, ngrok devuelve su pagina de aviso.
+export default function ImagenApi({ id, version = 0, className, alt = "" }) {
+  const [url, setUrl] = useState(null);
+
+  useEffect(() => {
+    if (!id) return;
+    let activo = true;
+    let creada = null;
+    imagenesApi
+      .archivo(id)
+      .then((blob) => {
+        creada = URL.createObjectURL(blob);
+        if (activo) setUrl(creada);
+      })
+      .catch(() => activo && setUrl(null));
+    return () => {
+      activo = false;
+      if (creada) URL.revokeObjectURL(creada);
+    };
+  }, [id, version]);
+
+  if (!id || !url) return <div className={`${className} sin-imagen`}>🎤</div>;
+  return <img src={url} alt={alt} className={className} />;
+}
