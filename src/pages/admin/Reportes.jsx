@@ -38,6 +38,7 @@ export default function Reportes() {
         <select value={estado} onChange={(e) => { setEstado(e.target.value); setSeleccionadoId(null); }}>
           <option value="">Todos los conciertos</option>
           <option value="programado">Programados</option>
+          <option value="finalizado">Finalizados</option>
           <option value="cancelado">Cancelados</option>
         </select>
       </div>
