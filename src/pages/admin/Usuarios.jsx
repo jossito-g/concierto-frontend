@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { usuariosApi } from "../../api/servicios";
+import { authApi, usuariosApi } from "../../api/servicios";
 import { mensajeError, nombreRol, ROLES } from "../../utils/formato";
 
 const vacio = { nombre: "", apellido: "", correo: "", contrasena: "", telefono: "", rolId: "" };
 
 export default function Usuarios() {
-  const { usuario: yo } = useAuth();
+  const { usuario: yo, actualizarUsuario } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [form, setForm] = useState(vacio);
   const [editandoId, setEditandoId] = useState(null);
@@ -39,8 +39,10 @@ export default function Usuarios() {
     if (form.contrasena) body.contrasena = form.contrasena;
 
     try {
-      if (editandoId) await usuariosApi.editar(editandoId, body);
-      else await usuariosApi.crear({ ...body, rolId: Number(form.rolId) });
+      if (editandoId) {
+        await usuariosApi.editar(editandoId, body);
+        if (editandoId === yo.id) actualizarUsuario(await authApi.perfil());
+      } else await usuariosApi.crear({ ...body, rolId: Number(form.rolId) });
       limpiar();
       recargar();
     } catch (err) {

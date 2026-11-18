@@ -1066,3 +1066,9 @@ details summary {
     grid-template-columns: 1fr;
   }
 }
+
+/* Nombres largos sin espacios (hasta 100 letras) ya no se salen de la pantalla */
+.perfil-encabezado,
+.menu-usuario {
+  overflow-wrap: anywhere;
+}

@@ -7,8 +7,13 @@ const normalizar = (u) => ({ ...u, rol: nombreRol(u) });
 
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(() => {
-    const guardado = localStorage.getItem("usuario");
-    return guardado ? JSON.parse(guardado) : null;
+    try {
+      const dato = JSON.parse(localStorage.getItem("usuario"));
+      return dato && typeof dato === "object" && !Array.isArray(dato) ? dato : null;
+    } catch {
+      localStorage.removeItem("usuario");
+      return null;
+    }
   });
 
   useEffect(() => {
