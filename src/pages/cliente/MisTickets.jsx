@@ -24,6 +24,14 @@ export default function MisTickets() {
     ticketsApi.mios().then(setTickets).catch((err) => setError(mensajeError(err)));
   }, [recarga]);
 
+  useEffect(() => {
+    const alMostrar = (e) => {
+      if (e.persisted) setPagandoId(null);
+    };
+    window.addEventListener("pageshow", alMostrar);
+    return () => window.removeEventListener("pageshow", alMostrar);
+  }, []);
+
   async function cancelar(t) {
     if (!confirm(`¿Cancelar el ticket ${t.clave}? Los asientos se liberan.`)) return;
     try {
@@ -44,6 +52,7 @@ export default function MisTickets() {
     } catch (err) {
       setError(mensajeError(err));
       setPagandoId(null);
+      setRecarga((r) => r + 1);
     }
   }
 
@@ -134,6 +143,11 @@ function Ficha({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar, 
       </p>
       <p className="nota">Si no pagas a tiempo, el ticket vence y los asientos se liberan.</p>
 
+      {conTarjeta && (
+        <p className="nota">
+          Modo de prueba: usa la tarjeta 4242 4242 4242 4242, cualquier fecha futura y cualquier CVC de 3 dígitos.
+        </p>
+      )}
       {conTarjeta && (
         <button onClick={onPagar} disabled={ocupado}>{pagando ? "Abriendo pago..." : "💳 Pagar con tarjeta"}</button>
       )}
