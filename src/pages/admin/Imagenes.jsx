@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { recintosApi, conciertosApi, artistasApi, imagenesApi } from "../../api/servicios";
-import { errorImagen, mensajeError } from "../../utils/formato";
+import { errorImagen, mensajeError, validarImagen } from "../../utils/formato";
 import ImagenApi from "../../components/ImagenApi";
-
-const TIPOS = ["image/jpeg", "image/png", "image/webp"];
-const MAXIMO_BYTES = 2 * 1024 * 1024;
 
 export default function Imagenes() {
   const [usos, setUsos] = useState([]);
@@ -28,8 +25,8 @@ export default function Imagenes() {
     const archivo = e.target.files[0];
     e.target.value = "";
     if (!archivo) return;
-    if (!TIPOS.includes(archivo.type)) return setError("Solo jpg, png o webp");
-    if (archivo.size > MAXIMO_BYTES) return setError("La imagen pesa más de 2 MB");
+    const problema = validarImagen(archivo);
+    if (problema) return setError(problema);
     try {
       await imagenesApi.reemplazar(imagenId, archivo);
       setVersiones({ ...versiones, [imagenId]: (versiones[imagenId] ?? 0) + 1 });

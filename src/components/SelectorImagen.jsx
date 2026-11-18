@@ -1,30 +1,25 @@
 import { useState } from "react";
 import { imagenesApi } from "../api/servicios";
-import { errorImagen } from "../utils/formato";
+import { errorImagen, validarImagen } from "../utils/formato";
 import ImagenApi from "./ImagenApi";
 
-const TIPOS = ["image/jpeg", "image/png", "image/webp"];
-const MAXIMO_BYTES = 2 * 1024 * 1024; // 2 MB
-
-/* Para los formularios de recinto (plano) y concierto (cartel).
--> imagenId: el id actual (o "" si no tiene). onChange(nuevoId | ""): avisa al formulario.*/
 export default function SelectorImagen({ etiqueta, imagenId, onChange }) {
-  const [version, setVersion] = useState(0); // para refrescar la vista previa al reemplazar
+  const [version, setVersion] = useState(0);
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState("");
 
   async function elegir(e) {
     const archivo = e.target.files[0];
-    e.target.value = ""; /* permite volver a elegir el mismo archivo*/
+    e.target.value = "";
     if (!archivo) return;
-    if (!TIPOS.includes(archivo.type)) return setError("Solo jpg, png o webp");
-    if (archivo.size > MAXIMO_BYTES) return setError("La imagen pesa más de 2 MB");
+    const problema = validarImagen(archivo);
+    if (problema) return setError(problema);
 
     setSubiendo(true);
     setError("");
     try {
       if (imagenId) {
-        await imagenesApi.reemplazar(imagenId, archivo); /* mismo id, otra imagen*/
+        await imagenesApi.reemplazar(imagenId, archivo);
         setVersion((v) => v + 1);
       } else {
         const nueva = await imagenesApi.subir(archivo);

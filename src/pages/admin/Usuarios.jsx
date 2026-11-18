@@ -1,37 +1,24 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { usuariosApi, rolesApi } from "../../api/servicios";
-import { mensajeError, buscarPorId } from "../../utils/formato";
-
-const ROLES_FIJOS = [
-  { id: 1, nombre: "administrador" },
-  { id: 2, nombre: "cliente" },
-];
+import { usuariosApi } from "../../api/servicios";
+import { mensajeError, nombreRol, ROLES } from "../../utils/formato";
 
 const vacio = { nombre: "", apellido: "", correo: "", contrasena: "", telefono: "", rolId: "" };
 
 export default function Usuarios() {
   const { usuario: yo } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
-  const [rolesBack, setRolesBack] = useState([]);
   const [form, setForm] = useState(vacio);
   const [editandoId, setEditandoId] = useState(null);
   const [recarga, setRecarga] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    rolesApi.listar().then(setRolesBack).catch(() => setRolesBack([]));
-  }, []);
-
-  useEffect(() => {
     usuariosApi.listar().then(setUsuarios).catch((err) => setError(mensajeError(err)));
   }, [recarga]);
 
-  const roles = Array.isArray(rolesBack) && rolesBack.length > 0 ? rolesBack : ROLES_FIJOS;
-
   const cambiar = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const recargar = () => setRecarga((r) => r + 1);
-  const nombreRol = (u) => u.rol?.nombre ?? (typeof u.rol === "string" ? u.rol : buscarPorId(roles, u.rolId)?.nombre);
 
   function limpiar() {
     setForm(vacio);
@@ -48,11 +35,11 @@ export default function Usuarios() {
 
     const body = { nombre: form.nombre.trim(), apellido: form.apellido.trim(), correo: form.correo.trim() };
     if (form.telefono) body.telefono = form.telefono;
-    else if (editandoId) body.telefono = null; 
+    else if (editandoId) body.telefono = null;
     if (form.contrasena) body.contrasena = form.contrasena;
 
     try {
-      if (editandoId) await usuariosApi.editar(editandoId, body); 
+      if (editandoId) await usuariosApi.editar(editandoId, body);
       else await usuariosApi.crear({ ...body, rolId: Number(form.rolId) });
       limpiar();
       recargar();
@@ -72,7 +59,7 @@ export default function Usuarios() {
       else await usuariosApi.activar(u.id);
       recargar();
     } catch (err) {
-      setError(mensajeError(err)); 
+      setError(mensajeError(err));
     }
   }
 
@@ -89,7 +76,7 @@ export default function Usuarios() {
           <input name="telefono" placeholder="Teléfono (opcional)" value={form.telefono} onChange={cambiar} maxLength={10} />
           <select name="rolId" value={form.rolId} onChange={cambiar} disabled={!!editandoId}>
             <option value="">Rol...</option>
-            {roles.map((r) => <option key={r.id} value={r.id}>{r.nombre}</option>)}
+            {ROLES.map((r) => <option key={r.id} value={r.id}>{r.nombre}</option>)}
           </select>
         </div>
         {error && <p className="error">{error}</p>}

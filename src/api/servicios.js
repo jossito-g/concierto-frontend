@@ -66,6 +66,12 @@ export const pagosApi = {
   cobrar: (body) => datos(api.post("/pagos", body)),
 };
 
+export const pagoEnLineaApi = {
+  estado: () => datos(api.get("/pagos/en-linea/estado")),
+  checkout: (clave) => datos(api.post("/pagos/en-linea/checkout", { clave })),
+  confirmar: (sessionId) => datos(api.post("/pagos/en-linea/confirmar", { sessionId })),
+};
+
 export const imagenesApi = {
   subir: (archivo) => {
     const form = new FormData();
@@ -85,5 +91,3 @@ export const reportesApi = {
   conciertos: (filtros) => datos(api.get("/reportes/conciertos", { params: limpiarParams(filtros) })),
   concierto: (id) => datos(api.get(`/reportes/conciertos/${id}`)),
 };
-
-export const rolesApi = { listar: () => datos(api.get("/roles")) };

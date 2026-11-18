@@ -16,7 +16,7 @@ export default function Cobrar() {
     metodosPagoApi
       .listar()
       .then((lista) => {
-        const activos = lista.filter((m) => m.activo);
+        const activos = lista.filter((m) => m.activo && m.nombre.toLowerCase() !== "tarjeta");
         setMetodos(activos);
         if (activos[0]) setMetodoPagoId(String(activos[0].id));
       })

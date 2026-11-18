@@ -13,7 +13,6 @@ export const aInputFecha = (iso) => {
 
 export const mensajeError = (err) => {
   const msg = err?.response?.data?.message;
-  /**Ruta que el back todavia no tiene (ej. "Cannot GET /cartelera")*/
   if (err?.response?.status === 404 && typeof msg === "string" && msg.startsWith("Cannot ")) {
     return "Esta sección todavía no está disponible en el servidor";
   }
@@ -25,17 +24,19 @@ export const mensajeError = (err) => {
 
 export const buscarPorId = (lista, id) => lista.find((x) => x.id === Number(id));
 
-
 export const nombreCiudad = (ciudad, estados = []) => {
   if (!ciudad) return "";
   const estado = ciudad.estado ?? buscarPorId(estados, ciudad.estadoId);
   return estado ? `${ciudad.nombre}, ${estado.nombre}` : ciudad.nombre;
 };
 
+export const ROLES = [
+  { id: 1, nombre: "administrador" },
+  { id: 2, nombre: "cliente" },
+];
 
-export const nombreRol = (u) => (typeof u?.rol === "string" ? u.rol : u?.rol?.nombre ?? u?.rolNombre ?? "");
-
-
+export const nombreRol = (u) =>
+  typeof u?.rol === "string" ? u.rol : u?.rol?.nombre ?? u?.rolNombre ?? buscarPorId(ROLES, u?.rolId)?.nombre ?? "";
 
 export const textoAsientos = (ticket) => {
   const detalles = ticket?.detalles ?? ticket?.asientos ?? [];
@@ -48,10 +49,18 @@ export const textoAsientos = (ticket) => {
     .join(", ");
 };
 
-
 export const errorImagen = (err) => {
   const status = err?.response?.status;
   if (status === 413) return "La imagen pesa más de 2 MB";
   if (status === 400) return "El archivo no es una imagen válida (solo jpg, png o webp)";
   return mensajeError(err);
+};
+
+const TIPOS_IMAGEN = ["image/jpeg", "image/png", "image/webp"];
+const MAXIMO_IMAGEN = 2 * 1024 * 1024;
+
+export const validarImagen = (archivo) => {
+  if (!TIPOS_IMAGEN.includes(archivo.type)) return "Solo jpg, png o webp";
+  if (archivo.size > MAXIMO_IMAGEN) return "La imagen pesa más de 2 MB";
+  return "";
 };

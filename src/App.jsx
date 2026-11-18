@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import Menu from "./components/Menu";
 import RutaProtegida from "./components/RutaProtegida";
 
@@ -9,6 +10,7 @@ import Perfil from "./pages/Perfil";
 import Cartelera from "./pages/cliente/Cartelera";
 import DetalleConcierto from "./pages/cliente/DetalleConcierto";
 import MisTickets from "./pages/cliente/MisTickets";
+import PagoExito from "./pages/cliente/PagoExito";
 
 import Usuarios from "./pages/admin/Usuarios";
 import Catalogos from "./pages/admin/Catalogos";
@@ -24,25 +26,28 @@ const ADMIN = ["administrador"];
 const CLIENTE = ["cliente"];
 const TODOS = ["administrador", "cliente"];
 
+function Inicio() {
+  const { usuario } = useAuth();
+  if (!usuario) return <Navigate to="/login" replace />;
+  return <Navigate to={usuario.rol === "administrador" ? "/admin/usuarios" : "/cartelera"} replace />;
+}
+
 export default function App() {
   return (
     <>
       <Menu />
       <main className="contenido">
         <Routes>
-          
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
 
-          
           <Route path="/perfil" element={<RutaProtegida roles={TODOS}><Perfil /></RutaProtegida>} />
           <Route path="/cartelera" element={<RutaProtegida roles={TODOS}><Cartelera /></RutaProtegida>} />
           <Route path="/conciertos/:id" element={<RutaProtegida roles={TODOS}><DetalleConcierto /></RutaProtegida>} />
 
-          
           <Route path="/mis-tickets" element={<RutaProtegida roles={CLIENTE}><MisTickets /></RutaProtegida>} />
+          <Route path="/pago/exito" element={<RutaProtegida roles={CLIENTE}><PagoExito /></RutaProtegida>} />
 
-          
           <Route path="/admin/usuarios" element={<RutaProtegida roles={ADMIN}><Usuarios /></RutaProtegida>} />
           <Route path="/admin/catalogos" element={<RutaProtegida roles={ADMIN}><Catalogos /></RutaProtegida>} />
           <Route path="/admin/artistas" element={<RutaProtegida roles={ADMIN}><Artistas /></RutaProtegida>} />
@@ -52,6 +57,8 @@ export default function App() {
           <Route path="/admin/cobrar" element={<RutaProtegida roles={ADMIN}><Cobrar /></RutaProtegida>} />
           <Route path="/admin/tickets" element={<RutaProtegida roles={ADMIN}><TicketsAdmin /></RutaProtegida>} />
           <Route path="/admin/reportes" element={<RutaProtegida roles={ADMIN}><Reportes /></RutaProtegida>} />
+
+          <Route path="*" element={<Inicio />} />
         </Routes>
       </main>
     </>

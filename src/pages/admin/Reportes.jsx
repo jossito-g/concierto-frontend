@@ -12,21 +12,20 @@ function Barra({ ocupados, capacidad, porcentaje }) {
 }
 
 export default function Reportes() {
-  const [filas, setFilas] = useState(null);
   const [estado, setEstado] = useState("");
+  const [resultado, setResultado] = useState(null);
   const [seleccionadoId, setSeleccionadoId] = useState(null);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    setFilas(null);
     reportesApi
       .conciertos({ estado })
-      .then((lista) => {
-        setFilas(lista);
-        setError("");
-      })
-      .catch((err) => setError(mensajeError(err)));
+      .then((lista) => setResultado({ estado, lista, error: "" }))
+      .catch((err) => setResultado({ estado, lista: null, error: mensajeError(err) }));
   }, [estado]);
+
+  const actual = resultado?.estado === estado ? resultado : null;
+  const filas = actual?.lista ?? null;
+  const error = actual?.error ?? "";
 
   const totalCentavos = (filas ?? []).reduce((suma, f) => suma + Math.round(Number(f.ingresos) * 100), 0);
   const sumar = (estadoTicket) => (filas ?? []).reduce((suma, f) => suma + (f.tickets.porEstado[estadoTicket] ?? 0), 0);

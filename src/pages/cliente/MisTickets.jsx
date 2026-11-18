@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ticketsApi, estadosApi } from "../../api/servicios";
+import { ticketsApi, estadosApi, pagoEnLineaApi } from "../../api/servicios";
 import { formatoFecha, formatoDinero, mensajeError, nombreCiudad } from "../../utils/formato";
 
 const MAXIMO_PENDIENTES = 3;
@@ -12,9 +12,12 @@ export default function MisTickets() {
   const [estados, setEstados] = useState([]);
   const [recarga, setRecarga] = useState(0);
   const [error, setError] = useState("");
+  const [conTarjeta, setConTarjeta] = useState(false);
+  const [pagandoId, setPagandoId] = useState(null);
 
   useEffect(() => {
     estadosApi.listar().then(setEstados).catch(() => setEstados([]));
+    pagoEnLineaApi.estado().then((r) => setConTarjeta(Boolean(r?.disponible))).catch(() => setConTarjeta(false));
   }, []);
 
   useEffect(() => {
@@ -32,12 +35,28 @@ export default function MisTickets() {
     }
   }
 
+  async function pagarConTarjeta(t) {
+    setPagandoId(t.id);
+    setError("");
+    try {
+      const { url } = await pagoEnLineaApi.checkout(t.clave);
+      window.location.assign(url);
+    } catch (err) {
+      setError(mensajeError(err));
+      setPagandoId(null);
+    }
+  }
+
   const pendientes = tickets?.filter((t) => t.estado === "pendiente").length ?? 0;
 
   return (
     <div>
       <h1>Mis tickets</h1>
-      {nuevoId && <p className="exito">✅ Asientos apartados. Paga en taquilla con la clave de tu ficha.</p>}
+      {nuevoId && (
+        <p className="exito">
+          ✅ Asientos apartados. {conTarjeta ? "Paga con tarjeta aquí mismo o en taquilla con la clave de tu ficha." : "Paga en taquilla con la clave de tu ficha."}
+        </p>
+      )}
       {error && <p className="error">{error}</p>}
       {!tickets && !error && <p className="nota">Cargando...</p>}
       {tickets && <p className="nota">Tickets pendientes: {pendientes} de {MAXIMO_PENDIENTES}.</p>}
@@ -49,7 +68,17 @@ export default function MisTickets() {
 
       {tickets?.map((t) =>
         t.estado === "pendiente" ? (
-          <Ficha key={t.id} ticket={t} estados={estados} nuevo={t.id === nuevoId} onCancelar={() => cancelar(t)} />
+          <Ficha
+            key={t.id}
+            ticket={t}
+            estados={estados}
+            nuevo={t.id === nuevoId}
+            conTarjeta={conTarjeta}
+            pagando={pagandoId === t.id}
+            ocupado={pagandoId !== null}
+            onPagar={() => pagarConTarjeta(t)}
+            onCancelar={() => cancelar(t)}
+          />
         ) : (
           <div key={t.id} className="tarjeta">
             <h3>{t.concierto?.nombre ?? `Concierto #${t.conciertoId}`}</h3>
@@ -67,7 +96,7 @@ export default function MisTickets() {
   );
 }
 
-function Ficha({ ticket, estados, nuevo, onCancelar }) {
+function Ficha({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar, onCancelar }) {
   const c = ticket.concierto;
   const recinto = c?.recinto;
   return (
@@ -101,12 +130,15 @@ function Ficha({ ticket, estados, nuevo, onCancelar }) {
 
       <p className="total">Total a pagar: {formatoDinero(ticket.total)}</p>
       <p>
-        ⏰ Paga en efectivo en taquilla antes de: <b>{formatoFecha(ticket.fechaLimite)}</b>
+        ⏰ {conTarjeta ? "Paga con tarjeta o en efectivo en taquilla" : "Paga en efectivo en taquilla"} antes de: <b>{formatoFecha(ticket.fechaLimite)}</b>
       </p>
       <p className="nota">Si no pagas a tiempo, el ticket vence y los asientos se liberan.</p>
 
-      <button className="secundario" onClick={() => window.print()}>Imprimir</button>
-      <button className="peligro" onClick={onCancelar}>Cancelar ticket</button>
+      {conTarjeta && (
+        <button onClick={onPagar} disabled={ocupado}>{pagando ? "Abriendo pago..." : "💳 Pagar con tarjeta"}</button>
+      )}
+      <button className="secundario" onClick={() => window.print()} disabled={ocupado}>Imprimir</button>
+      <button className="peligro" onClick={onCancelar} disabled={ocupado}>Cancelar ticket</button>
     </div>
   );
 }

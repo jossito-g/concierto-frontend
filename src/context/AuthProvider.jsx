@@ -1,8 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { authApi } from "../api/servicios";
 import { nombreRol } from "../utils/formato";
-
-const AuthContext = createContext(null);
+import { AuthContext } from "./AuthContext";
 
 const normalizar = (u) => ({ ...u, rol: nombreRol(u) });
 
@@ -12,7 +11,6 @@ export function AuthProvider({ children }) {
     return guardado ? JSON.parse(guardado) : null;
   });
 
-  
   useEffect(() => {
     if (!localStorage.getItem("token")) return;
     authApi
@@ -22,7 +20,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem("usuario", JSON.stringify(datos));
         setUsuario(datos);
       })
-      .catch(() => {});
+      .catch(() => null);
   }, []);
 
   async function login(correo, contrasena) {
@@ -37,10 +35,7 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
-    try {
-      await authApi.logout();
-    } catch {
-    }
+    await authApi.logout().catch(() => null);
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
     setUsuario(null);
@@ -52,5 +47,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
-export const useAuth = () => useContext(AuthContext);
