@@ -8,7 +8,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -18,8 +18,8 @@ api.interceptors.response.use(
   (error) => {
     const esLogin = error.config?.url?.includes("/auth/login");
     if (error.response?.status === 401 && !esLogin) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("usuario");
       window.location.href = "/login?cerrada=1";
     }
     return Promise.reject(error);

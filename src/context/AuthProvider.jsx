@@ -8,21 +8,21 @@ const normalizar = (u) => ({ ...u, rol: nombreRol(u) });
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(() => {
     try {
-      const dato = JSON.parse(localStorage.getItem("usuario"));
+      const dato = JSON.parse(sessionStorage.getItem("usuario"));
       return dato && typeof dato === "object" && !Array.isArray(dato) ? dato : null;
     } catch {
-      localStorage.removeItem("usuario");
+      sessionStorage.removeItem("usuario");
       return null;
     }
   });
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) return;
+    if (!sessionStorage.getItem("token")) return;
     authApi
       .perfil()
       .then((perfil) => {
         const datos = normalizar(perfil);
-        localStorage.setItem("usuario", JSON.stringify(datos));
+        sessionStorage.setItem("usuario", JSON.stringify(datos));
         setUsuario(datos);
       })
       .catch(() => null);
@@ -31,24 +31,24 @@ export function AuthProvider({ children }) {
   async function login(correo, contrasena) {
     const res = await authApi.login({ correo, contrasena });
     const token = res.token ?? res.access_token ?? res.accessToken;
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
 
     const datos = normalizar(res.usuario ?? res.user ?? (await authApi.perfil()));
-    localStorage.setItem("usuario", JSON.stringify(datos));
+    sessionStorage.setItem("usuario", JSON.stringify(datos));
     setUsuario(datos);
     return datos;
   }
 
   function actualizarUsuario(perfil) {
     const datos = normalizar(perfil);
-    localStorage.setItem("usuario", JSON.stringify(datos));
+    sessionStorage.setItem("usuario", JSON.stringify(datos));
     setUsuario(datos);
   }
 
   async function logout() {
     await authApi.logout().catch(() => null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("usuario");
     setUsuario(null);
   }
 
