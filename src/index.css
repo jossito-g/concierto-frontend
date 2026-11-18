@@ -939,6 +939,43 @@ details summary {
   font-weight: 600;
 }
 
+.perfil-editar {
+  align-self: center;
+  margin: 0 0 0 auto;
+}
+
+.perfil-aviso {
+  margin: 0 0 16px;
+}
+
+.tarjeta .perfil-aviso {
+  margin: 16px 0 0;
+}
+
+.perfil-seccion {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--borde);
+}
+
+.perfil-seccion h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.perfil-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.perfil-quitar {
+  margin-top: 12px;
+}
+
 .perfil-numeros {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1018,6 +1055,10 @@ details summary {
   .perfil-encabezado {
     flex-direction: column;
     text-align: center;
+  }
+
+  .perfil-editar {
+    margin: 0;
   }
 
   .perfil-datos,

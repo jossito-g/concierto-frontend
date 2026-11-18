@@ -34,6 +34,12 @@ export function AuthProvider({ children }) {
     return datos;
   }
 
+  function actualizarUsuario(perfil) {
+    const datos = normalizar(perfil);
+    localStorage.setItem("usuario", JSON.stringify(datos));
+    setUsuario(datos);
+  }
+
   async function logout() {
     await authApi.logout().catch(() => null);
     localStorage.removeItem("token");
@@ -42,7 +48,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, login, logout }}>
+    <AuthContext.Provider value={{ usuario, login, logout, actualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   );

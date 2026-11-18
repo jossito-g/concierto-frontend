@@ -17,6 +17,7 @@ export const authApi = {
   registro: (body) => datos(api.post("/auth/registro", body)),
   login: (body) => datos(api.post("/auth/login", body)),
   perfil: () => datos(api.get("/auth/perfil")),
+  actualizarPerfil: (body) => datos(api.patch("/auth/perfil", body)),
   logout: () => datos(api.post("/auth/logout")),
 };
 

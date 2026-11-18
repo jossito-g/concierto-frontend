@@ -143,11 +143,11 @@ function Ficha({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar, 
       </p>
       <p className="nota">Si no pagas a tiempo, el ticket vence y los asientos se liberan.</p>
 
-      {conTarjeta && (
+      {/*conTarjeta && (
         <p className="nota">
           Modo de prueba: usa la tarjeta 4242 4242 4242 4242, cualquier fecha futura y cualquier CVC de 3 dígitos.
         </p>
-      )}
+      )*/}
       {conTarjeta && (
         <button onClick={onPagar} disabled={ocupado}>{pagando ? "Abriendo pago..." : "💳 Pagar con tarjeta"}</button>
       )}
