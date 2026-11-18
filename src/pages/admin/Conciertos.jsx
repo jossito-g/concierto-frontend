@@ -180,8 +180,8 @@ function ArtistasYPrecios({ concierto }) {
       .filter((z) => precios[z.id] !== undefined && precios[z.id] !== "")
       .map((z) => ({ zonaId: z.id, precio: Number(precios[z.id]) })); 
     if (lista.length === 0) return setError("Pon precio al menos a una zona");
-    const malo = lista.find((p) => !(p.precio > 0) || p.precio > 100000 || Math.round(p.precio * 100) / 100 !== p.precio);
-    if (malo) return setError("Cada precio debe ser mayor a 0, hasta 100,000 y con máximo 2 decimales");
+    const malo = lista.find((p) => !(p.precio >= 10) || p.precio > 100000 || Math.round(p.precio * 100) / 100 !== p.precio);
+    if (malo) return setError("Cada precio debe ser de al menos $10, hasta 100,000 y con máximo 2 decimales");
     try {
       cargarDetalle(await conciertosApi.asignarPrecios(concierto.id, lista)); 
       setError("");
@@ -209,7 +209,7 @@ function ArtistasYPrecios({ concierto }) {
       </div>
       <button onClick={guardarArtistas}>Guardar artistas</button>
 
-      <h4>Precio por zona (vacío = no se vende)</h4>
+      <h4>Precio por zona (mínimo $10; vacío = no se vende)</h4>
       {zonasActivas.length === 0 && <p className="nota">Este recinto no tiene zonas activas. Créalas en Recintos → Zonas.</p>}
       {zonasActivas.map((z) => (
         <div key={z.id} className="en-linea">
@@ -217,7 +217,7 @@ function ArtistasYPrecios({ concierto }) {
           <input
             type="number"
             step="0.01"
-            min="0"
+            min="10"
             placeholder="Precio"
             value={precios[z.id] ?? ""}
             onChange={(e) => { setAviso(""); setPrecios({ ...precios, [z.id]: e.target.value }); }}
