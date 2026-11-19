@@ -22,7 +22,11 @@ export const aInputFecha = (iso) => {
   return `${d.getFullYear()}-${dosDigitos(d.getMonth() + 1)}-${dosDigitos(d.getDate())}T${dosDigitos(d.getHours())}:${dosDigitos(d.getMinutes())}`;
 };
 
-const traducirMensaje = (texto) => (texto === "correo must be an email" ? "El correo no es válido" : texto);
+const traducirMensaje = (texto) => {
+  if (texto === "correo must be an email") return "El correo no es válido";
+  if (texto.endsWith("must not be longer than 72 bytes")) return "La contraseña es demasiado larga (máximo 72 bytes: los acentos y emojis ocupan más de uno)";
+  return texto;
+};
 
 export const mensajeError = (err) => {
   const msg = err?.response?.data?.message;

@@ -1128,6 +1128,18 @@ td.cero {
   margin: 12px 0 0;
 }
 
+.detalle-encabezado > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.detalle-encabezado h1,
+.artistas-detalle b,
+.dato span,
+.detalle-descripcion {
+  overflow-wrap: anywhere;
+}
+
 .seccion-titulo {
   margin: 36px 0 16px;
   padding-top: 20px;
