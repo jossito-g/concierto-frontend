@@ -29,7 +29,7 @@ const TODOS = ["administrador", "cliente"];
 function Inicio() {
   const { usuario } = useAuth();
   if (!usuario) return <Navigate to="/login" replace />;
-  return <Navigate to={usuario.rol === "administrador" ? "/admin/usuarios" : "/cartelera"} replace />;
+  return <Navigate to={usuario.rol === "administrador" ? "/admin/reportes" : "/cartelera"} replace />;
 }
 
 export default function App() {

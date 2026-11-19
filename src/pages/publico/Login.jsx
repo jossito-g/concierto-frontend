@@ -20,7 +20,7 @@ export default function Login() {
     setEnviando(true);
     try {
       const usuario = await login(correo.trim(), contrasena);
-      navigate(usuario.rol === "administrador" ? "/admin/usuarios" : "/cartelera");
+      navigate(usuario.rol === "administrador" ? "/admin/reportes" : "/cartelera");
     } catch (err) {
       setError(mensajeError(err));
     } finally {

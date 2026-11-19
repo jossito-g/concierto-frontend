@@ -9,6 +9,7 @@ const opcionesCliente = [
 ];
 
 const opcionesAdmin = [
+  { ruta: "/admin/reportes", texto: "Reportes" },
   { ruta: "/admin/usuarios", texto: "Usuarios" },
   { ruta: "/admin/catalogos", texto: "Catálogos" },
   { ruta: "/admin/artistas", texto: "Artistas" },
@@ -17,7 +18,6 @@ const opcionesAdmin = [
   { ruta: "/admin/imagenes", texto: "Imágenes" },
   { ruta: "/admin/cobrar", texto: "Cobrar" },
   { ruta: "/admin/tickets", texto: "Tickets" },
-  { ruta: "/admin/reportes", texto: "Reportes" },
   { ruta: "/cartelera", texto: "Cartelera" },
   { ruta: "/perfil", texto: "Perfil" },
 ];

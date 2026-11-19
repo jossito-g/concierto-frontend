@@ -5,7 +5,7 @@ export default function RutaProtegida({ roles, children}){
     const{usuario} = useAuth();
     if(!usuario) return <Navigate to="/login" replace />;
     if(roles && !roles.includes(usuario.rol)){
-        return <Navigate to={usuario.rol === "administrador" ? "/admin/usuarios" : "/cartelera"} replace/>;
+        return <Navigate to={usuario.rol === "administrador" ? "/admin/reportes" : "/cartelera"} replace/>;
     }
     return children;
 }
