@@ -3,6 +3,7 @@ import { artistasApi, generosApi } from "../../api/servicios";
 import { mensajeError, buscarPorId } from "../../utils/formato";
 import SelectorImagen from "../../components/SelectorImagen";
 import ImagenApi from "../../components/ImagenApi";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
 
 const vacio = { nombre: "", generoId: "", descripcion: "", imagenId: "" };
 
@@ -61,7 +62,7 @@ export default function Artistas() {
 
   return (
     <div>
-      <h1>Artistas</h1>
+      <EncabezadoPagina titulo="Artistas" />
       <form className="tarjeta" onSubmit={guardar}>
         <h3>{editandoId ? "Editar artista" : "Nuevo artista"}</h3>
         <div className="dos-columnas">

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { pagoEnLineaApi } from "../../api/servicios";
 import { formatoDinero, formatoFecha, mensajeError, textoAsientos } from "../../utils/formato";
+import { IconoCheck } from "../../components/Iconos";
 
 export default function PagoExito() {
   const [params] = useSearchParams();
@@ -41,13 +42,13 @@ export default function PagoExito() {
   const ticket = pago.ticket;
   return (
     <div className="tarjeta pago-resultado">
-      <p className="pago-icono">✅</p>
+      <p className="pago-icono"><IconoCheck tam={56} /></p>
       <h1>¡Pago aprobado!</h1>
       <p className="nota">Tu ticket ya está pagado. Preséntalo con su clave el día del concierto.</p>
       {ticket && (
         <>
           <h3>{ticket.concierto?.nombre}</h3>
-          <p className="ficha-clave">{ticket.clave}</p>
+          <p className="boleto-clave">{ticket.clave}</p>
           {textoAsientos(ticket) && <p>Asientos: {textoAsientos(ticket)}</p>}
           <p className="nota">{formatoFecha(ticket.concierto?.fecha)} · {ticket.concierto?.recinto?.nombre}</p>
         </>

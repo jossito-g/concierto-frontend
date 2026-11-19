@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ticketsApi } from "../../api/servicios";
 import { useDialogos } from "../../context/DialogosContext";
 import { formatoDinero, formatoFecha, mensajeError, textoAsientos } from "../../utils/formato";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
+import Exito from "../../components/Exito";
 
 function diaDeEntrada(fecha) {
   if (!fecha) return "hoy";
@@ -69,14 +71,14 @@ export default function TicketsAdmin() {
 
   return (
     <div>
-      <h1>Tickets</h1>
+      <EncabezadoPagina titulo="Tickets" />
       <form onSubmit={buscar} className="tarjeta en-linea">
         <input placeholder="Clave del ticket" value={clave} maxLength={8} onChange={(e) => setClave(e.target.value)} className="clave" />
         <button type="submit">Buscar</button>
       </form>
 
       {error && <p className="error">{error}</p>}
-      {aviso && !error && <p className="exito">✅ {aviso}</p>}
+      {aviso && !error && <Exito>{aviso}</Exito>}
 
       {ticket && (
         <div className="tarjeta">

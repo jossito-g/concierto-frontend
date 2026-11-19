@@ -3,6 +3,8 @@ import { conciertosApi, recintosApi, zonasApi, artistasApi, generosApi } from ".
 import { useDialogos } from "../../context/DialogosContext";
 import { mensajeError, formatoFecha, formatoDinero, aInputFecha, buscarPorId } from "../../utils/formato";
 import SelectorImagen from "../../components/SelectorImagen";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
+import Exito from "../../components/Exito";
 
 const vacio = { nombre: "", descripcion: "", fecha: "", recintoId: "", imagenId: "" };
 
@@ -98,7 +100,7 @@ export default function Conciertos() {
 
   return (
     <div>
-      <h1>Conciertos</h1>
+      <EncabezadoPagina titulo="Conciertos" />
       <form className="tarjeta" onSubmit={guardar}>
         <h3>{editando ? "Editar concierto" : "Nuevo concierto"}</h3>
         <div className="dos-columnas">
@@ -244,7 +246,7 @@ function ArtistasYPrecios({ concierto }) {
       <button onClick={guardarPrecios}>Guardar precios</button>
 
       {error && <p className="error">{error}</p>}
-      {aviso && !error && <p className="exito">✅ {aviso}</p>}
+      {aviso && !error && <Exito>{aviso}</Exito>}
     </div>
   );
 }

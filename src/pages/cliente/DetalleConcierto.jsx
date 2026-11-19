@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { carteleraApi, ticketsApi, estadosApi } from "../../api/servicios";
 import { formatoFecha, formatoDinero, mensajeError, nombreCiudad } from "../../utils/formato";
 import ImagenApi from "../../components/ImagenApi";
+import { IconoCalendario, IconoLugar } from "../../components/Iconos";
 
 const MAXIMO_ASIENTOS = 8;
 
@@ -105,13 +106,19 @@ export default function DetalleConcierto() {
               ))}
             </div>
           )}
-          <p className="nota">📅 {formatoFecha(concierto.fecha)}</p>
-          {recinto && (
-            <p className="nota">
-              📍 {recinto.nombre} · {recinto.direccion} · {nombreCiudad(recinto.ciudad, estados)}
+          <div className="datos">
+            <p className="dato">
+              <IconoCalendario />
+              <span className="mono">{formatoFecha(concierto.fecha)}</span>
             </p>
-          )}
-          {concierto.descripcion && <p>{concierto.descripcion}</p>}
+            {recinto && (
+              <p className="dato">
+                <IconoLugar />
+                <span>{recinto.nombre} · {recinto.direccion} · {nombreCiudad(recinto.ciudad, estados)}</span>
+              </p>
+            )}
+          </div>
+          {concierto.descripcion && <p className="detalle-descripcion">{concierto.descripcion}</p>}
         </div>
       </div>
 
@@ -122,16 +129,19 @@ export default function DetalleConcierto() {
         </details>
       )}
 
-      <h2>Elige tus asientos</h2>
+      <h2 className="seccion-titulo">Elige tus asientos</h2>
       {zonas.length === 0 ? (
         <p className="nota">Este concierto todavía no tiene zonas a la venta.</p>
       ) : (
-        <select value={zonaId} onChange={cambiarZona}>
-          <option value="">Elige una zona</option>
-          {zonas.map((z) => (
-            <option key={z.zonaId} value={z.zonaId}>{z.nombre} — {formatoDinero(z.precio)}</option>
-          ))}
-        </select>
+        <div className="campo-filtro campo-zona">
+          <label htmlFor="zona-concierto">Zona</label>
+          <select id="zona-concierto" value={zonaId} onChange={cambiarZona}>
+            <option value="">Elige una zona</option>
+            {zonas.map((z) => (
+              <option key={z.zonaId} value={z.zonaId}>{z.nombre} — {formatoDinero(z.precio)}</option>
+            ))}
+          </select>
+        </div>
       )}
 
       {zona && (

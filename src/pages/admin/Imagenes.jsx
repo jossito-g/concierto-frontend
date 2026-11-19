@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { recintosApi, conciertosApi, artistasApi, imagenesApi } from "../../api/servicios";
 import { errorImagen, mensajeError, validarImagen } from "../../utils/formato";
 import ImagenApi from "../../components/ImagenApi";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
+import Exito from "../../components/Exito";
 
 export default function Imagenes() {
   const [usos, setUsos] = useState([]);
@@ -39,12 +41,12 @@ export default function Imagenes() {
 
   return (
     <div>
-      <h1>Imágenes</h1>
+      <EncabezadoPagina titulo="Imágenes" />
       <p className="nota">
         Planos de recintos, carteles de conciertos y fotos de artistas. Para ponerle o quitarle la imagen a uno, edítalo en Recintos, Conciertos o Artistas.
       </p>
       {error && <p className="error">{error}</p>}
-      {aviso && !error && <p className="exito">✅ {aviso}</p>}
+      {aviso && !error && <Exito>{aviso}</Exito>}
       {usos.length === 0 && !error && <p className="nota">Todavía ningún recinto, concierto ni artista tiene imagen.</p>}
 
       <div className="rejilla">

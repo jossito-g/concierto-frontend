@@ -3,8 +3,15 @@ import { Link, useLocation } from "react-router-dom";
 import { ticketsApi, estadosApi, pagoEnLineaApi } from "../../api/servicios";
 import { useDialogos } from "../../context/DialogosContext";
 import { formatoFecha, formatoDinero, mensajeError, nombreCiudad } from "../../utils/formato";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
+import Exito from "../../components/Exito";
+import { IconoCalendario, IconoLugar, IconoReloj, IconoTarjeta } from "../../components/Iconos";
 
 const MAXIMO_PENDIENTES = 3;
+
+const ORDEN_ESTADO = { pendiente: 0, pagado: 1, usado: 2, vencido: 3, cancelado: 4 };
+const ordenar = (lista) =>
+  [...lista].sort((a, b) => (ORDEN_ESTADO[a.estado] ?? 9) - (ORDEN_ESTADO[b.estado] ?? 9) || b.id - a.id);
 
 export default function MisTickets() {
   const { state } = useLocation();
@@ -69,24 +76,30 @@ export default function MisTickets() {
 
   return (
     <div>
-      <h1>Mis tickets</h1>
+      <EncabezadoPagina titulo="Mis tickets">
+        {tickets && (
+          <p className="pagina-texto">
+            Tickets pendientes: <span className="mono">{pendientes} de {MAXIMO_PENDIENTES}</span>
+          </p>
+        )}
+      </EncabezadoPagina>
+
       {nuevoId && (
-        <p className="exito">
-          ✅ Asientos apartados. {conTarjeta ? "Paga con tarjeta aquí mismo o en taquilla con la clave de tu ficha." : "Paga en taquilla con la clave de tu ficha."}
-        </p>
+        <Exito>
+          Asientos apartados. {conTarjeta ? "Paga con tarjeta aquí mismo o en taquilla con la clave de tu ficha." : "Paga en taquilla con la clave de tu ficha."}
+        </Exito>
       )}
       {error && <p className="error">{error}</p>}
       {!tickets && !error && <p className="nota">Cargando...</p>}
-      {tickets && <p className="nota">Tickets pendientes: {pendientes} de {MAXIMO_PENDIENTES}.</p>}
       {tickets?.length === 0 && (
         <p>
           Todavía no tienes tickets. <Link to="/cartelera">Ve a la cartelera</Link>
         </p>
       )}
 
-      {tickets?.map((t) =>
-        t.estado === "pendiente" ? (
-          <Ficha
+      <div className="boletos">
+        {tickets && ordenar(tickets).map((t) => (
+          <Boleto
             key={t.id}
             ticket={t}
             estados={estados}
@@ -97,66 +110,127 @@ export default function MisTickets() {
             onPagar={() => pagarConTarjeta(t)}
             onCancelar={() => cancelar(t)}
           />
-        ) : (
-          <div key={t.id} className="tarjeta">
-            <h3>{t.concierto?.nombre ?? `Concierto #${t.conciertoId}`}</h3>
-            <p>
-              Clave: <b className="clave">{t.clave}</b> <span className={`estado ${t.estado}`}>{t.estado}</span>
-            </p>
-            <p className="nota">{formatoFecha(t.concierto?.fecha)} · {t.concierto?.recinto?.nombre}</p>
-            <p>Asientos: {(t.asientos ?? []).map((a) => `${a.zona} ${a.fila}${a.numero}`).join(", ")}</p>
-            <p>Total: {formatoDinero(t.total)}</p>
-            {t.usadoEn && <p className="nota">Entraste al concierto: {formatoFecha(t.usadoEn)}</p>}
-          </div>
-        )
-      )}
+        ))}
+      </div>
     </div>
   );
 }
 
-function Ficha({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar, onCancelar }) {
+const ETIQUETA_CLAVE = { pendiente: "Clave de pago", pagado: "Clave de entrada", usado: "Clave de entrada" };
+
+const AYUDA = {
+  pagado: "Da esta clave en la entrada del concierto.",
+  usado: "Este ticket ya se usó.",
+  cancelado: "Ticket cancelado. Los asientos se liberaron.",
+  vencido: "Este ticket venció. Los asientos se liberaron.",
+};
+
+function imprimir(e) {
+  const boleto = e.currentTarget.closest(".boleto");
+  boleto.classList.add("imprimiendo");
+  window.addEventListener("afterprint", () => boleto.classList.remove("imprimiendo"), { once: true });
+  window.print();
+}
+
+function Boleto({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar, onCancelar }) {
   const c = ticket.concierto;
   const recinto = c?.recinto;
+  const pendiente = ticket.estado === "pendiente";
+  const asientos = ticket.asientos ?? [];
+
   return (
-    <div className={`tarjeta ficha ${nuevo ? "ficha-nueva" : ""}`}>
-      <div className="ficha-encabezado">
-        <span>FICHA DE PAGO</span>
-        <span className="estado pendiente">pendiente</span>
+    <article className={`boleto ${ticket.estado}${pendiente ? " ficha" : ""}${nuevo ? " ficha-nueva" : ""}`}>
+      <div className="boleto-principal">
+        <div className="boleto-estado">
+          <span className={`estado ${ticket.estado}`}>{ticket.estado}</span>
+          {pendiente && <span className="boleto-etiqueta">Ficha de pago</span>}
+        </div>
+
+        <h2>{c?.nombre ?? `Concierto #${ticket.conciertoId}`}</h2>
+
+        <div className="datos">
+          <p className="dato">
+            <IconoCalendario />
+            <span className="mono">{formatoFecha(c?.fecha)}</span>
+          </p>
+          {recinto && (
+            <p className="dato">
+              <IconoLugar />
+              <span>{recinto.nombre}, {nombreCiudad(recinto.ciudad, estados)}</span>
+            </p>
+          )}
+        </div>
+
+        {pendiente ? (
+          <table>
+            <thead><tr><th>Zona</th><th>Asiento</th><th>Precio</th></tr></thead>
+            <tbody>
+              {asientos.map((a) => (
+                <tr key={a.asientoId}>
+                  <td>{a.zona}</td>
+                  <td>{a.fila}{a.numero}</td>
+                  <td>{formatoDinero(a.precio)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="boleto-asientos">
+            <span className="boleto-etiqueta">Asientos</span>
+            {asientos.map((a) => (
+              <span key={a.asientoId} className="asiento-chip">{a.zona} {a.fila}{a.numero}</span>
+            ))}
+          </div>
+        )}
+
+        {pendiente && (
+          <div className="boleto-aviso">
+            <IconoReloj tam={18} />
+            <div>
+              <p className="aviso-principal">
+                {conTarjeta ? "Paga con tarjeta o en efectivo en taquilla" : "Paga en efectivo en taquilla"} antes del{" "}
+                <span className="mono">{formatoFecha(ticket.fechaLimite)}</span>
+              </p>
+              <p className="aviso-detalle">Si no pagas a tiempo, el ticket vence y los asientos se liberan.</p>
+            </div>
+          </div>
+        )}
+
+        {ticket.usadoEn && (
+          <div className="boleto-detalles">
+            <div>
+              <p className="boleto-etiqueta">Entraste el</p>
+              <p className="valor">{formatoFecha(ticket.usadoEn)}</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      <h3>{c?.nombre}</h3>
-      <p className="nota">
-        📅 {formatoFecha(c?.fecha)}
-        {recinto && <> · 📍 {recinto.nombre}, {nombreCiudad(recinto.ciudad, estados)}</>}
-      </p>
+      <div className="boleto-talon">
+        <div className="boleto-campo">
+          <p className="boleto-etiqueta">{ETIQUETA_CLAVE[ticket.estado] ?? "Clave"}</p>
+          <p className="boleto-clave">{ticket.clave}</p>
+        </div>
+        <div className="boleto-campo">
+          <p className="boleto-etiqueta">{pendiente ? "Total a pagar" : "Total"}</p>
+          <p className="boleto-total">{formatoDinero(ticket.total)}</p>
+        </div>
 
-      <p className="nota">Clave de pago</p>
-      <p className="ficha-clave">{ticket.clave}</p>
-
-      <table>
-        <thead><tr><th>Zona</th><th>Asiento</th><th>Precio</th></tr></thead>
-        <tbody>
-          {(ticket.asientos ?? []).map((a) => (
-            <tr key={a.asientoId}>
-              <td>{a.zona}</td>
-              <td>{a.fila}{a.numero}</td>
-              <td>{formatoDinero(a.precio)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <p className="total">Total a pagar: {formatoDinero(ticket.total)}</p>
-      <p>
-        ⏰ {conTarjeta ? "Paga con tarjeta o en efectivo en taquilla" : "Paga en efectivo en taquilla"} antes de: <b>{formatoFecha(ticket.fechaLimite)}</b>
-      </p>
-      <p className="nota">Si no pagas a tiempo, el ticket vence y los asientos se liberan.</p>
-
-      {conTarjeta && (
-        <button onClick={onPagar} disabled={ocupado}>{pagando ? "Abriendo pago..." : "💳 Pagar con tarjeta"}</button>
-      )}
-      <button className="secundario" onClick={() => window.print()} disabled={ocupado}>Imprimir</button>
-      <button className="peligro" onClick={onCancelar} disabled={ocupado}>Cancelar ticket</button>
-    </div>
+        {pendiente ? (
+          <div className="boleto-acciones">
+            {conTarjeta && (
+              <button type="button" className="boton-pagar" onClick={onPagar} disabled={ocupado}>
+                <IconoTarjeta tam={20} />
+                <span>{pagando ? "Abriendo pago..." : "Pagar con tarjeta"}</span>
+              </button>
+            )}
+            <button type="button" className="secundario" onClick={imprimir} disabled={ocupado}>Imprimir</button>
+            <button type="button" className="enlace-peligro" onClick={onCancelar} disabled={ocupado}>Cancelar ticket</button>
+          </div>
+        ) : (
+          <p className="boleto-ayuda">{AYUDA[ticket.estado]}</p>
+        )}
+      </div>
+    </article>
   );
 }

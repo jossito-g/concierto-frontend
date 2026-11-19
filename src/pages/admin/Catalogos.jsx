@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { estadosApi, ciudadesApi, generosApi } from "../../api/servicios";
 import { mensajeError, nombreCiudad } from "../../utils/formato";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
 
 function ListaSimple({ titulo, campo, ejemplo, servicio }) {
   const [lista, setLista] = useState([]);
@@ -160,7 +161,7 @@ export default function Catalogos() {
 
   return (
     <div>
-      <h1>Catálogos</h1>
+      <EncabezadoPagina titulo="Catálogos" />
       <div className="rejilla catalogos">
         <Ciudades estados={estados} />
         <ListaSimple

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { authApi, usuariosApi } from "../../api/servicios";
 import { mensajeError, nombreRol, ROLES } from "../../utils/formato";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
 
 const vacio = { nombre: "", apellido: "", correo: "", contrasena: "", telefono: "", rolId: "" };
 
@@ -67,7 +68,7 @@ export default function Usuarios() {
 
   return (
     <div>
-      <h1>Usuarios</h1>
+      <EncabezadoPagina titulo="Usuarios" />
       <form className="tarjeta" onSubmit={guardar}>
         <h3>{editandoId ? "Editar usuario" : "Nuevo usuario"}</h3>
         <div className="dos-columnas">

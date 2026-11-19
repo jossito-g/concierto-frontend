@@ -3,6 +3,7 @@ import { recintosApi, zonasApi, ciudadesApi, estadosApi } from "../../api/servic
 import { useDialogos } from "../../context/DialogosContext";
 import { mensajeError, nombreCiudad, buscarPorId } from "../../utils/formato";
 import SelectorImagen from "../../components/SelectorImagen";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
 
 const vacio = { nombre: "", direccion: "", ciudadId: "", imagenId: "" };
 
@@ -71,7 +72,7 @@ export default function Recintos() {
 
   return (
     <div>
-      <h1>Recintos</h1>
+      <EncabezadoPagina titulo="Recintos" />
       <form className="tarjeta" onSubmit={guardar}>
         <h3>{editandoId ? "Editar recinto" : "Nuevo recinto"}</h3>
         <div className="dos-columnas">
@@ -152,7 +153,7 @@ function Zonas({ recinto }) {
     });
     if (!nombre || !nombre.trim()) return;
     try {
-      await zonasApi.editar(z.id, { nombre: nombre.trim() }); /* solo el nombre se edita */
+      await zonasApi.editar(z.id, { nombre: nombre.trim() }); 
       recargar();
     } catch (err) {
       setError(mensajeError(err));

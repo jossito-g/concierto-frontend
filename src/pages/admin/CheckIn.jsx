@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ticketsApi } from "../../api/servicios";
 import { formatoFecha, mensajeError, textoAsientos } from "../../utils/formato";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
 
 const LARGO_CLAVE = 8;
 
@@ -251,7 +252,7 @@ export default function CheckIn() {
   return (
     <div className="checkin">
       <div className="checkin-cabecera">
-        <h1>Check-in</h1>
+        <EncabezadoPagina titulo="Check-in" />
         <p className="nota">Escribe o pega la clave del ticket. Se revisa sola al completar los {LARGO_CLAVE} caracteres.</p>
       </div>
 

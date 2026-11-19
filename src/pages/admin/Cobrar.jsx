@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { ticketsApi, pagosApi, metodosPagoApi } from "../../api/servicios";
 import { formatoDinero, formatoFecha, mensajeError, textoAsientos } from "../../utils/formato";
+import EncabezadoPagina from "../../components/EncabezadoPagina";
+import Exito from "../../components/Exito";
 
 export default function Cobrar() {
   const [clave, setClave] = useState("");
@@ -66,7 +68,7 @@ export default function Cobrar() {
 
   return (
     <div>
-      <h1>Cobrar ticket</h1>
+      <EncabezadoPagina titulo="Cobrar ticket" />
       <form onSubmit={buscar} className="tarjeta en-linea">
         <input placeholder="Clave del ticket" value={clave} maxLength={8} onChange={(e) => setClave(e.target.value)} className="clave" />
         <button type="submit">Buscar</button>
@@ -101,7 +103,7 @@ export default function Cobrar() {
               {ticket.estado === "pagado" || ticket.estado === "usado" ? "Este ticket ya está pagado." : "Este ticket ya no se puede cobrar."}
             </p>
           )}
-          {pago && <p className="exito">✅ Cobrado. Entrega {formatoDinero(pago.cambio ?? cambio)} de cambio.</p>}
+          {pago && <Exito>Cobrado. Entrega {formatoDinero(pago.cambio ?? cambio)} de cambio.</Exito>}
         </div>
       )}
     </div>

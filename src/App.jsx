@@ -34,8 +34,11 @@ function Inicio() {
 }
 
 export default function App() {
+  const { usuario } = useAuth();
+  const esAdmin = usuario?.rol === "administrador";
+
   return (
-    <>
+    <div className={esAdmin ? "app app-admin" : "app"}>
       <Menu />
       <main className="contenido">
         <Routes>
@@ -63,6 +66,6 @@ export default function App() {
           <Route path="*" element={<Inicio />} />
         </Routes>
       </main>
-    </>
+    </div>
   );
 }

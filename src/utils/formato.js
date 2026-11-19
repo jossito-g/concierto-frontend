@@ -1,6 +1,15 @@
 export const formatoFecha = (texto) =>
   texto ? new Date(texto).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" }) : "";
 
+export const partesFecha = (texto) => {
+  if (!texto) return { dia: "", mes: "" };
+  const fecha = new Date(texto);
+  return {
+    dia: String(fecha.getDate()).padStart(2, "0"),
+    mes: fecha.toLocaleDateString("es-MX", { month: "short" }).replace(".", ""),
+  };
+};
+
 export const formatoDinero = (valor) =>
   Number(valor || 0).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 
