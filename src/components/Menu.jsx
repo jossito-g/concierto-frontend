@@ -17,6 +17,7 @@ const opcionesAdmin = [
   { ruta: "/admin/conciertos", texto: "Conciertos" },
   { ruta: "/admin/imagenes", texto: "Imágenes" },
   { ruta: "/admin/cobrar", texto: "Cobrar" },
+  { ruta: "/admin/checkin", texto: "Check-in" },
   { ruta: "/admin/tickets", texto: "Tickets" },
   { ruta: "/cartelera", texto: "Cartelera" },
   { ruta: "/perfil", texto: "Perfil" },

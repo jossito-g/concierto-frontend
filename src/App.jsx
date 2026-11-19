@@ -19,6 +19,7 @@ import Recintos from "./pages/admin/Recintos";
 import Conciertos from "./pages/admin/Conciertos";
 import Imagenes from "./pages/admin/Imagenes";
 import Cobrar from "./pages/admin/Cobrar";
+import CheckIn from "./pages/admin/CheckIn";
 import TicketsAdmin from "./pages/admin/TicketsAdmin";
 import Reportes from "./pages/admin/Reportes";
 
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/admin/conciertos" element={<RutaProtegida roles={ADMIN}><Conciertos /></RutaProtegida>} />
           <Route path="/admin/imagenes" element={<RutaProtegida roles={ADMIN}><Imagenes /></RutaProtegida>} />
           <Route path="/admin/cobrar" element={<RutaProtegida roles={ADMIN}><Cobrar /></RutaProtegida>} />
+          <Route path="/admin/checkin" element={<RutaProtegida roles={ADMIN}><CheckIn /></RutaProtegida>} />
           <Route path="/admin/tickets" element={<RutaProtegida roles={ADMIN}><TicketsAdmin /></RutaProtegida>} />
           <Route path="/admin/reportes" element={<RutaProtegida roles={ADMIN}><Reportes /></RutaProtegida>} />
 

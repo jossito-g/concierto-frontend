@@ -1144,6 +1144,261 @@ details summary {
   color: var(--tinta-2);
 }
 
+.checkin {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 0 28px;
+  align-items: start;
+}
+
+.checkin-cabecera {
+  grid-column: 1 / -1;
+}
+
+.checkin-cabecera h1 {
+  margin-bottom: 8px;
+}
+
+.checkin-cabecera .nota {
+  margin: 0 0 20px;
+}
+
+.checkin-principal {
+  min-width: 0;
+}
+
+.checkin-busqueda {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+
+.checkin-busqueda button {
+  margin: 0;
+  min-height: 64px;
+  padding: 0 28px;
+  font-size: 22px;
+}
+
+input.checkin-clave {
+  flex: 1;
+  min-height: 64px;
+  font-family: var(--f-mono);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  border-color: var(--tinta);
+}
+
+input.checkin-clave::placeholder {
+  font-family: var(--f-texto);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.checkin-resultado {
+  margin-top: 20px;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--papel);
+}
+
+.checkin-banner {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 24px;
+  color: #fff;
+  background: var(--ok-texto);
+}
+
+.checkin-resultado.aviso .checkin-banner {
+  color: var(--tinta);
+  background: var(--amarillo);
+}
+
+.checkin-resultado.mal .checkin-banner {
+  background: var(--rojo);
+}
+
+.checkin-icono {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.checkin-icono circle {
+  stroke-width: 1.8;
+}
+
+.checkin-titulo {
+  margin: 0;
+  font-family: var(--f-titulo);
+  font-size: clamp(36px, 6vw, 52px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.checkin-detalle {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.checkin-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  margin: 0;
+  padding: 20px 24px;
+}
+
+.checkin-datos dt {
+  margin-bottom: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+.checkin-datos dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.checkin-datos .estado {
+  margin-left: 8px;
+}
+
+.checkin-sub {
+  display: block;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--tinta-2);
+}
+
+.checkin-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 24px 24px;
+}
+
+.checkin-acciones button,
+.checkin-acciones .boton {
+  margin: 0;
+}
+
+.checkin-acciones .checkin-entrada {
+  min-height: 60px;
+  padding: 0 36px;
+  font-size: 26px;
+}
+
+.checkin-lateral {
+  margin-bottom: 0;
+}
+
+.checkin-lateral h3 {
+  margin: 0 0 4px;
+}
+
+.checkin-lateral .nota {
+  margin: 0;
+}
+
+.checkin-lista {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkin-lista li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid var(--linea);
+}
+
+.checkin-lista .hora {
+  font-family: var(--f-mono);
+  font-size: 14px;
+  color: var(--tinta-3);
+}
+
+.checkin-lista .quien {
+  flex-basis: 100%;
+  font-size: 14px;
+  color: var(--tinta-2);
+}
+
+@media (max-width: 900px) {
+  .checkin {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkin-lateral {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .checkin-busqueda {
+    flex-direction: column;
+  }
+
+  input.checkin-clave {
+    font-size: 26px;
+    letter-spacing: 0.16em;
+  }
+
+  .checkin-busqueda button {
+    min-height: 52px;
+  }
+
+  .checkin-banner {
+    padding: 16px;
+  }
+
+  .checkin-icono {
+    width: 44px;
+    height: 44px;
+  }
+
+  .checkin-datos {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+
+  .checkin-acciones {
+    flex-direction: column;
+    padding: 0 16px 16px;
+  }
+
+  .checkin-acciones button,
+  .checkin-acciones .boton {
+    width: 100%;
+  }
+}
+
 .dialogo {
   width: min(460px, calc(100vw - 32px));
   max-width: none;
