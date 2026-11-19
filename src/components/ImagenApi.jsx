@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { imagenesApi } from "../api/servicios";
 
-// Muestra una imagen del back. Se descarga con axios (y no con <img src>)
-// para mandar el header de ngrok; si no, ngrok devuelve su pagina de aviso.
 export default function ImagenApi({ id, version = 0, className, alt = "" }) {
   const [url, setUrl] = useState(null);
 

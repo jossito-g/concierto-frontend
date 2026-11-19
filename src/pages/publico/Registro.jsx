@@ -12,7 +12,6 @@ export default function Registro() {
   const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
 
-  // Un solo onChange para todos los campos: usa el "name" del input
   const cambiar = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   function validar() {
@@ -31,7 +30,7 @@ export default function Registro() {
     setEnviando(true);
     try {
       const body = { ...form };
-      if (!body.telefono) delete body.telefono; /* esto es opcional si esta vacio no se manda */
+      if (!body.telefono) delete body.telefono; 
       await authApi.registro(body);
       alert("Cuenta creada. Ahora inicia sesión.");
       navigate("/login");
