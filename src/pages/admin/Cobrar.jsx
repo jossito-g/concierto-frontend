@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ticketsApi, pagosApi, metodosPagoApi } from "../../api/servicios";
 import { formatoDinero, formatoFecha, mensajeError, textoAsientos } from "../../utils/formato";
 import EncabezadoPagina from "../../components/EncabezadoPagina";
 import Exito from "../../components/Exito";
+import DatosPago from "../../components/DatosPago";
 
 export default function Cobrar() {
-  const [clave, setClave] = useState("");
+  const [params] = useSearchParams();
+  const claveDelEnlace = (params.get("clave") ?? "").trim().toUpperCase();
+  const claveValida = claveDelEnlace.length === 8 ? claveDelEnlace : "";
+  const [clave, setClave] = useState(claveValida);
   const [ticket, setTicket] = useState(null);
   const [metodos, setMetodos] = useState([]);
   const [metodoPagoId, setMetodoPagoId] = useState("");
@@ -24,6 +29,22 @@ export default function Cobrar() {
       })
       .catch((err) => setError(mensajeError(err)));
   }, []);
+
+  useEffect(() => {
+    if (!claveValida) return;
+    let vigente = true;
+    ticketsApi
+      .porClave(claveValida)
+      .then((encontrado) => {
+        if (vigente) setTicket(encontrado);
+      })
+      .catch((err) => {
+        if (vigente) setError(mensajeError(err));
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [claveValida]);
 
   async function buscar(e) {
     e.preventDefault();
@@ -57,7 +78,7 @@ export default function Cobrar() {
         montoRecibido: recibidoCentavos / 100,
       });
       setPago(resultado);
-      setTicket({ ...ticket, estado: "pagado" });
+      setTicket(resultado.ticket ?? { ...ticket, estado: "pagado" });
       setError("");
     } catch (err) {
       setError(mensajeError(err));
@@ -84,6 +105,8 @@ export default function Cobrar() {
           {textoAsientos(ticket) && <p>Asientos: {textoAsientos(ticket)}</p>}
           <p>Fecha límite: {formatoFecha(ticket.fechaLimite)}</p>
           <p className="total">Total: {formatoDinero(ticket.total)}</p>
+
+          <DatosPago pago={ticket.pago} detallado />
 
           {ticket.estado === "pendiente" && (
             <>

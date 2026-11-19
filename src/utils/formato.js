@@ -1,6 +1,8 @@
 export const formatoFecha = (texto) =>
   texto ? new Date(texto).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" }) : "";
 
+export const formatoDia = (texto) => (texto ? new Date(texto).toLocaleDateString("es-MX", { dateStyle: "medium" }) : "");
+
 export const partesFecha = (texto) => {
   if (!texto) return { dia: "", mes: "" };
   const fecha = new Date(texto);

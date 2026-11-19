@@ -139,10 +139,25 @@ export default function CheckIn() {
   const [error, setError] = useState("");
   const [buscando, setBuscando] = useState(false);
   const [enviando, setEnviando] = useState(false);
-  const [entradas, setEntradas] = useState([]);
+  const [hoy, setHoy] = useState(undefined);
   const campo = useRef(null);
   const botonEntrada = useRef(null);
   const peticion = useRef(0);
+
+  useEffect(() => {
+    let vigente = true;
+    ticketsApi
+      .entradasHoy()
+      .then((datos) => {
+        if (vigente) setHoy(datos);
+      })
+      .catch(() => {
+        if (vigente) setHoy(null);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (resultado?.veredicto.puedeEntrar && !resultado.registrado) botonEntrada.current?.focus();
@@ -218,16 +233,7 @@ export default function CheckIn() {
     try {
       const actualizado = await ticketsApi.usar(ticket.id);
       setResultado({ ticket: actualizado, veredicto: veredictoRegistrado(actualizado), registrado: true });
-      setEntradas((lista) => [
-        {
-          id: actualizado.id,
-          clave: actualizado.clave,
-          hora: actualizado.usadoEn ?? new Date().toISOString(),
-          cliente: nombreCliente(actualizado),
-          asientos: textoAsientos(actualizado),
-        },
-        ...lista,
-      ]);
+      ticketsApi.entradasHoy().then(setHoy).catch(() => {});
       setClave("");
       setError("");
       campo.current?.focus();
@@ -290,22 +296,38 @@ export default function CheckIn() {
       </div>
 
       <aside className="tarjeta checkin-lateral">
-        <h3>Últimas entradas</h3>
-        <p className="nota">
-          {entradas.length === 0
-            ? "Aquí aparecen las entradas que registres en esta pantalla."
-            : `Registradas en esta pantalla: ${entradas.length}`}
-        </p>
-        {entradas.length > 0 && (
-          <ul className="checkin-lista">
-            {entradas.slice(0, 8).map((e) => (
-              <li key={e.id}>
-                <span className="hora">{horaCorta(e.hora)}</span>
-                <b className="clave">{e.clave}</b>
-                <span className="quien">{[e.cliente, e.asientos].filter(Boolean).join(" · ")}</span>
-              </li>
-            ))}
-          </ul>
+        <h3>Entradas de hoy</h3>
+        {hoy === undefined && <p className="nota">Cargando...</p>}
+        {hoy === null && <p className="nota">No se pudo cargar el conteo de hoy.</p>}
+        {hoy && (
+          <>
+            <div className="checkin-contadores">
+              <p>
+                <b className="checkin-numero">{hoy.tickets}</b>
+                <span>{hoy.tickets === 1 ? "ticket" : "tickets"}</span>
+              </p>
+              <p>
+                <b className="checkin-numero">{hoy.personas}</b>
+                <span>{hoy.personas === 1 ? "persona" : "personas"}</span>
+              </p>
+            </div>
+            {hoy.ultimas.length === 0 ? (
+              <p className="nota">Todavía no ha entrado nadie hoy.</p>
+            ) : (
+              <>
+                <p className="checkin-subtitulo">Últimas entradas</p>
+                <ul className="checkin-lista">
+                  {hoy.ultimas.map((t) => (
+                    <li key={t.id}>
+                      <span className="hora">{horaCorta(t.usadoEn)}</span>
+                      <b className="clave">{t.clave}</b>
+                      <span className="quien">{[nombreCliente(t), textoAsientos(t)].filter(Boolean).join(" · ")}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </>
         )}
       </aside>
     </div>

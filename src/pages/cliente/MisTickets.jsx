@@ -5,6 +5,7 @@ import { useDialogos } from "../../context/DialogosContext";
 import { formatoFecha, formatoDinero, mensajeError, nombreCiudad } from "../../utils/formato";
 import EncabezadoPagina from "../../components/EncabezadoPagina";
 import Exito from "../../components/Exito";
+import DatosPago, { Dato } from "../../components/DatosPago";
 import { IconoCalendario, IconoLugar, IconoReloj, IconoTarjeta } from "../../components/Iconos";
 
 const MAXIMO_PENDIENTES = 3;
@@ -196,14 +197,9 @@ function Boleto({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar,
           </div>
         )}
 
-        {ticket.usadoEn && (
-          <div className="boleto-detalles">
-            <div>
-              <p className="boleto-etiqueta">Entraste el</p>
-              <p className="valor">{formatoFecha(ticket.usadoEn)}</p>
-            </div>
-          </div>
-        )}
+        <DatosPago pago={ticket.pago}>
+          {ticket.usadoEn && <Dato titulo="Entraste el">{formatoFecha(ticket.usadoEn)}</Dato>}
+        </DatosPago>
       </div>
 
       <div className="boleto-talon">
