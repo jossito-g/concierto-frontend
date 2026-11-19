@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { recintosApi, zonasApi, ciudadesApi, estadosApi } from "../../api/servicios";
+import { useDialogos } from "../../context/DialogosContext";
 import { mensajeError, nombreCiudad, buscarPorId } from "../../utils/formato";
 import SelectorImagen from "../../components/SelectorImagen";
 
@@ -112,6 +113,7 @@ export default function Recintos() {
 }
 
 function Zonas({ recinto }) {
+  const { pedirTexto } = useDialogos();
   const [zonas, setZonas] = useState([]);
   const [form, setForm] = useState({ nombre: "", filas: "", asientosPorFila: "" });
   const [recarga, setRecarga] = useState(0);
@@ -141,7 +143,13 @@ function Zonas({ recinto }) {
   }
 
   async function renombrar(z) {
-    const nombre = prompt("Nuevo nombre de la zona", z.nombre);
+    const nombre = await pedirTexto({
+      titulo: "Renombrar zona",
+      etiqueta: "Nuevo nombre de la zona",
+      valor: z.nombre,
+      confirmar: "Guardar nombre",
+      maxLength: 50,
+    });
     if (!nombre || !nombre.trim()) return;
     try {
       await zonasApi.editar(z.id, { nombre: nombre.trim() }); /* solo el nombre se edita */

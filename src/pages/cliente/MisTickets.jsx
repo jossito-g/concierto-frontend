@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ticketsApi, estadosApi, pagoEnLineaApi } from "../../api/servicios";
+import { useDialogos } from "../../context/DialogosContext";
 import { formatoFecha, formatoDinero, mensajeError, nombreCiudad } from "../../utils/formato";
 
 const MAXIMO_PENDIENTES = 3;
 
 export default function MisTickets() {
   const { state } = useLocation();
+  const { confirmar } = useDialogos();
   const nuevoId = state?.nuevoId;
   const [tickets, setTickets] = useState(null);
   const [estados, setEstados] = useState([]);
@@ -33,7 +35,14 @@ export default function MisTickets() {
   }, []);
 
   async function cancelar(t) {
-    if (!confirm(`¿Cancelar el ticket ${t.clave}? Los asientos se liberan.`)) return;
+    const seguro = await confirmar({
+      titulo: "Cancelar ticket",
+      mensaje: `¿Cancelar el ticket ${t.clave}? Los asientos se liberan.`,
+      confirmar: "Sí, cancelar ticket",
+      cancelar: "No, conservarlo",
+      peligro: true,
+    });
+    if (!seguro) return;
     try {
       await ticketsApi.cancelar(t.id);
       setError("");
@@ -143,11 +152,6 @@ function Ficha({ ticket, estados, nuevo, conTarjeta, pagando, ocupado, onPagar, 
       </p>
       <p className="nota">Si no pagas a tiempo, el ticket vence y los asientos se liberan.</p>
 
-      {/*conTarjeta && (
-        <p className="nota">
-          Modo de prueba: usa la tarjeta 4242 4242 4242 4242, cualquier fecha futura y cualquier CVC de 3 dígitos.
-        </p>
-      )*/}
       {conTarjeta && (
         <button onClick={onPagar} disabled={ocupado}>{pagando ? "Abriendo pago..." : "💳 Pagar con tarjeta"}</button>
       )}

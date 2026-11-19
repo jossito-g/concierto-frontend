@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { conciertosApi, recintosApi, zonasApi, artistasApi, generosApi } from "../../api/servicios";
+import { useDialogos } from "../../context/DialogosContext";
 import { mensajeError, formatoFecha, formatoDinero, aInputFecha, buscarPorId } from "../../utils/formato";
 import SelectorImagen from "../../components/SelectorImagen";
 
 const vacio = { nombre: "", descripcion: "", fecha: "", recintoId: "", imagenId: "" };
 
 export default function Conciertos() {
+  const { confirmar } = useDialogos();
   const [conciertos, setConciertos] = useState([]);
   const [recintos, setRecintos] = useState([]);
   const [form, setForm] = useState(vacio);
@@ -25,7 +27,6 @@ export default function Conciertos() {
   const cambiar = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const recargar = () => setRecarga((r) => r + 1);
 
-  /* Se busca en la lista para tener siempre el recinto actualizado*/
   const seleccionado = conciertos.find((c) => c.id === seleccionadoId);
 
   function limpiar() {
@@ -42,7 +43,15 @@ export default function Conciertos() {
     if (cambiaFecha && new Date(form.fecha) <= new Date()) return setError("La fecha debe ser futura");
 
     const cambiaRecinto = editando && Number(form.recintoId) !== editando.recintoId;
-    if (cambiaRecinto && !confirm("Si cambias el recinto se borran los precios de este concierto. ¿Continuar?")) return;
+    if (cambiaRecinto) {
+      const seguro = await confirmar({
+        titulo: "Cambiar el recinto",
+        mensaje: "Si cambias el recinto se borran los precios de este concierto. ¿Continuar?",
+        confirmar: "Sí, cambiar recinto",
+        peligro: true,
+      });
+      if (!seguro) return;
+    }
 
     const body = { nombre: form.nombre.trim(), recintoId: Number(form.recintoId) };
     if (cambiaFecha) body.fecha = new Date(form.fecha).toISOString(); 
@@ -71,7 +80,14 @@ export default function Conciertos() {
   }
 
   async function cancelar(c) {
-    if (!confirm(`¿Cancelar "${c.nombre}"? No se puede deshacer.`)) return;
+    const seguro = await confirmar({
+      titulo: "Cancelar concierto",
+      mensaje: `¿Cancelar "${c.nombre}"? No se puede deshacer.`,
+      confirmar: "Sí, cancelar concierto",
+      cancelar: "No, regresar",
+      peligro: true,
+    });
+    if (!seguro) return;
     try {
       await conciertosApi.cancelar(c.id);
       recargar();

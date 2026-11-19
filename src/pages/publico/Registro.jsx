@@ -32,8 +32,7 @@ export default function Registro() {
       const body = { ...form };
       if (!body.telefono) delete body.telefono; 
       await authApi.registro(body);
-      alert("Cuenta creada. Ahora inicia sesión.");
-      navigate("/login");
+      navigate("/login", { state: { registrado: true } });
     } catch (err) {
       setError(mensajeError(err)); 
     } finally {

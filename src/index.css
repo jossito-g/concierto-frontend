@@ -15,7 +15,6 @@
   --berenjena: #1a0b1c;
   --crema: #fbefe0;
 
- 
   --pendiente-fondo: #fff0c7;
   --pendiente-texto: #6b4200;
   --pendiente-borde: #ebcb7a;
@@ -88,7 +87,6 @@ a {
   color: var(--naranja-texto);
   text-underline-offset: 3px;
 }
-
 
 .menu {
   position: sticky;
@@ -188,7 +186,6 @@ a {
   padding: 28px 16px 48px;
 }
 
-
 .tarjeta {
   margin-bottom: 16px;
   padding: 20px;
@@ -200,7 +197,6 @@ a {
 .tarjeta h3 {
   margin-top: 0;
 }
-
 
 label {
   display: block;
@@ -364,7 +360,6 @@ button.chico:disabled {
   border: 1.5px solid var(--linea);
 }
 
-
 .error {
   padding: 10px 12px;
   border: 1px solid var(--mal-borde);
@@ -430,7 +425,6 @@ button.chico:disabled {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 10px;
 }
-
 
 .rejilla {
   display: grid;
@@ -502,7 +496,6 @@ button.chico:disabled {
 .rejilla > .tarjeta:has(.lista) h3 {
   margin-top: 0;
 }
-
 
 table {
   width: 100%;
@@ -581,7 +574,6 @@ td .chico {
   opacity: 0.5;
 }
 
-
 .estado {
   display: inline-flex;
   align-items: center;
@@ -637,7 +629,6 @@ td .chico {
   background: var(--tinta);
 }
 
-
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -668,7 +659,6 @@ td .chico {
 .chip input {
   width: auto;
 }
-
 
 .miniatura {
   display: block;
@@ -763,7 +753,6 @@ details summary {
   gap: 10px;
   align-items: center;
 }
-
 
 .escenario {
   margin: 20px 0 14px;
@@ -878,7 +867,6 @@ details summary {
   background: #d9d3cc;
 }
 
-
 .barra {
   height: 10px;
   overflow: hidden;
@@ -932,7 +920,6 @@ details summary {
   min-width: 120px;
 }
 
-
 .ficha {
   max-width: 640px;
   border: 2px solid var(--tinta);
@@ -975,7 +962,6 @@ details summary {
   margin: 0;
   font-size: 44px;
 }
-
 
 .catalogo-form {
   display: flex;
@@ -1020,7 +1006,6 @@ details summary {
 .rejilla.catalogos {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
-
 
 .perfil {
   max-width: 720px;
@@ -1159,6 +1144,74 @@ details summary {
   color: var(--tinta-2);
 }
 
+.dialogo {
+  width: min(460px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+.dialogo::backdrop {
+  background: rgba(22, 17, 15, 0.6);
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+.dialogo-cuerpo {
+  padding: 26px 28px 24px;
+  border-top: 6px solid var(--naranja);
+  border-radius: 4px;
+}
+
+.dialogo-cuerpo.alerta {
+  border-top-color: var(--rojo);
+}
+
+.dialogo-titulo {
+  margin: 0 0 10px;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.dialogo-texto {
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+.dialogo-cuerpo label {
+  margin-top: 18px;
+}
+
+.dialogo-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.dialogo-botones button {
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .dialogo-cuerpo {
+    padding: 22px 20px 20px;
+  }
+
+  .dialogo-botones {
+    flex-direction: column-reverse;
+  }
+
+  .dialogo-botones button {
+    width: 100%;
+  }
+}
 
 @media print {
   body {

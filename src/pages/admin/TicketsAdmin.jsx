@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ticketsApi } from "../../api/servicios";
+import { useDialogos } from "../../context/DialogosContext";
 import { formatoDinero, formatoFecha, mensajeError, textoAsientos } from "../../utils/formato";
 
 function diaDeEntrada(fecha) {
@@ -11,6 +12,7 @@ function diaDeEntrada(fecha) {
 }
 
 export default function TicketsAdmin() {
+  const { confirmar } = useDialogos();
   const [clave, setClave] = useState("");
   const [ticket, setTicket] = useState(null);
   const [error, setError] = useState("");
@@ -31,7 +33,14 @@ export default function TicketsAdmin() {
   }
 
   async function cancelar() {
-    if (!confirm(`¿Cancelar el ticket ${ticket.clave}? Los asientos se liberan.`)) return;
+    const seguro = await confirmar({
+      titulo: "Cancelar ticket",
+      mensaje: `¿Cancelar el ticket ${ticket.clave}? Los asientos se liberan.`,
+      confirmar: "Sí, cancelar ticket",
+      cancelar: "No, conservarlo",
+      peligro: true,
+    });
+    if (!seguro) return;
     try {
       await ticketsApi.cancelar(ticket.id);
       setTicket(await ticketsApi.porClave(ticket.clave));
@@ -43,7 +52,12 @@ export default function TicketsAdmin() {
   }
 
   async function darEntrada() {
-    if (!confirm(`¿Dar entrada con el ticket ${ticket.clave}? Ya no se podrá volver a usar.`)) return;
+    const seguro = await confirmar({
+      titulo: "Dar entrada",
+      mensaje: `¿Dar entrada con el ticket ${ticket.clave}? Ya no se podrá volver a usar.`,
+      confirmar: "Sí, dar entrada",
+    });
+    if (!seguro) return;
     try {
       setTicket(await ticketsApi.usar(ticket.id));
       setError("");

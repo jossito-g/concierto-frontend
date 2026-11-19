@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { mensajeError } from "../../utils/formato";
 import AuthLayout from "../../components/AuthLayout";
@@ -11,6 +11,7 @@ export default function Login() {
   const [enviando, setEnviando] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [params] = useSearchParams();
 
   async function enviar(e) {
@@ -32,6 +33,7 @@ export default function Login() {
     <AuthLayout pie={<>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></>}>
       <h1>Iniciar sesión</h1>
       <p className="nota">Entra para ver la cartelera y apartar tus asientos.</p>
+      {state?.registrado && !error && <p className="exito">Cuenta creada. Ahora inicia sesión.</p>}
       {params.get("cerrada") && !error && (
         <p className="error">Tu sesión se cerró porque se venció o entraste desde otro dispositivo. Inicia sesión otra vez.</p>
       )}
