@@ -11,12 +11,14 @@ export const aInputFecha = (iso) => {
   return `${d.getFullYear()}-${dosDigitos(d.getMonth() + 1)}-${dosDigitos(d.getDate())}T${dosDigitos(d.getHours())}:${dosDigitos(d.getMinutes())}`;
 };
 
+const traducirMensaje = (texto) => (texto === "correo must be an email" ? "El correo no es válido" : texto);
+
 export const mensajeError = (err) => {
   const msg = err?.response?.data?.message;
   if (err?.response?.status === 404 && typeof msg === "string" && msg.startsWith("Cannot ")) {
     return "Esta sección todavía no está disponible en el servidor";
   }
-  if (Array.isArray(msg)) return msg.join(". ");
+  if (Array.isArray(msg)) return msg.map(traducirMensaje).join(". ");
   if (msg) return msg;
   if (!err?.response) return "No hay conexión con el servidor";
   return "Ocurrió un error, intenta de nuevo";
